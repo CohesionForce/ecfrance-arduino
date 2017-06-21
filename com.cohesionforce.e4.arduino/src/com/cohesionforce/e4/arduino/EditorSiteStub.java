@@ -57,8 +57,7 @@ public class EditorSiteStub implements IEditorSite {
 
 	@Override
 	public IWorkbenchPage getPage() {
-		// TODO Auto-generated method stub
-		return null;
+		return new WorkbenchPageStub();
 	}
 
 	@Override
