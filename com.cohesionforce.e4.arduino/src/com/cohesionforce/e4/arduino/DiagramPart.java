@@ -3,17 +3,13 @@ package com.cohesionforce.e4.arduino;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -30,18 +26,13 @@ import org.eclipse.sirius.business.api.session.Session;
 import org.eclipse.sirius.business.api.session.SessionCreationOperation;
 import org.eclipse.sirius.diagram.DSemanticDiagram;
 import org.eclipse.sirius.diagram.ui.business.internal.command.CreateAndStoreGMFDiagramCommand;
-import org.eclipse.sirius.diagram.ui.business.internal.dialect.DiagramDialectArrangeOperation;
 import org.eclipse.sirius.diagram.ui.tools.internal.editor.DDiagramEditorImpl;
-import org.eclipse.sirius.diagram.ui.tools.internal.editor.tabbar.Tabbar;
-import org.eclipse.sirius.ui.business.api.dialect.DialectEditor;
 import org.eclipse.sirius.ui.business.api.dialect.DialectUIManager;
 import org.eclipse.sirius.ui.business.api.session.SessionEditorInput;
 import org.eclipse.sirius.ui.business.api.viewpoint.ViewpointSelectionCallback;
 import org.eclipse.sirius.viewpoint.DRepresentation;
 import org.eclipse.sirius.viewpoint.description.Viewpoint;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PartInitException;
 
@@ -51,23 +42,27 @@ import fr.obeo.dsl.arduino.Project;
 import fr.obeo.dsl.arduino.Sketch;
 
 
+@SuppressWarnings("restriction")
 public class DiagramPart {
 	
 	public static final String ARDUINO_VP = "Arduino";
 	public static final String HARDWARE_KIT_VP = "Hardware Kit";
 	public static final String BASE_PATH = "/tmp/";
-	private URI semanticModelURI;
+	private String timestamp = "timestamp";
 	
 	@Inject
 	public DiagramPart() {
+		timestamp = String.valueOf(System.currentTimeMillis());
 	}
 
 	@PostConstruct
 	public void postConstruct(Composite parent) {
-		final Session session = createAird(URI.createFileURI(BASE_PATH+"representations.aird"),
+		
+		// Much of this code was copied from the createProject method of ProjectServices
+		final Session session = createAird(URI.createFileURI(BASE_PATH+timestamp+"-representations.aird"),
 				new NullProgressMonitor());
 
-		final String semanticModelPath = BASE_PATH+"model.arduino";
+		final String semanticModelPath = BASE_PATH+timestamp+"-model.arduino";
 		initSemanticModel(session, semanticModelPath, new NullProgressMonitor());
 
 		final String[] viewpointsToActivate = { ARDUINO_VP };
@@ -75,12 +70,13 @@ public class DiagramPart {
 
 		Collection<DRepresentation> representations = DialectManager.INSTANCE
 				.getAllRepresentations(session);
+		
 		for (DRepresentation representation : representations) {
 			if ("Hardware".equals(representation.getName())) {
 				
-				DDiagramEditorImpl diagram = new DDiagramEditorImpl();
-				
 				try {
+					
+					DDiagramEditorImpl diagram = new DDiagramEditorImpl();
 					
 		            if (representation instanceof DSemanticDiagram) {
 		                final DSemanticDiagram diag = (DSemanticDiagram) representation;
@@ -97,17 +93,10 @@ public class DiagramPart {
 		                    gmfDiags.addAll(session.getServices().getCustomData(CustomDataConstants.GMF_DIAGRAMS, diag));
 		                }
 
-		                // If the current DDiagram is shared on a CDO repository and
-		                // some
-		                // needed Viewpoints are not activated (for example a
-		                // contributed
-		                // activated layer)
-		                Set<Viewpoint> viewpointsActivated = null;
 		                for (final EObject object : gmfDiags) {
 		                    final Diagram gmfDiag = (Diagram) object;
 		                    if (gmfDiag != null) {
 		                    	
-		                        DialectEditor dialectEditor = null;
 		                        URI uri = EcoreUtil.getURI(gmfDiag);
 		                        String editorName = DialectUIManager.INSTANCE.getEditorName(representation);
 		                        final IEditorInput editorInput = new SessionEditorInput(uri, editorName, session);
@@ -115,43 +104,21 @@ public class DiagramPart {
 		    					diagram.init(new EditorSiteStub(), editorInput);
 		    					diagram.createPartControl(parent);
 		                    	
-		    					Tabbar tabbar = diagram.getTabbar();
-		    					
-		                        new DiagramDialectArrangeOperation().arrange(diagram, diag);
 		                    }
 		                }
-		                if (viewpointsActivated != null && !viewpointsActivated.isEmpty()) {
-//		                    informOfActivateNeededViewpoints(viewpointsActivated);
-		                }
 		            }
-
-					
 				} catch (PartInitException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
+				// Return after the first one - not sure why we would have more
 				return;
 			}
 		}
 
 	}
 
-	@PreDestroy
-	public void preDestroy() {
-
-	}
-
-	@Focus
-	public void onFocus() {
-
-	}
-
-	@Persist
-	public void save() {
-
-	}
-
+	// Copied from ProjectServices
 	private Session createAird(URI representationsURI, IProgressMonitor monitor) {
 		final Session session;
 		Session tempSession = null;
@@ -172,6 +139,7 @@ public class DiagramPart {
 		return session;
 	}
 
+	// Copied from ProjectServices
 	private void initSemanticModel(final Session session,
 			final String semanticModelPath, final IProgressMonitor monitor) {
 		
@@ -183,7 +151,7 @@ public class DiagramPart {
 							@Override
 							protected void doExecute() {
 
-								semanticModelURI = URI
+								URI semanticModelURI = URI
 										.createFileURI(
 												semanticModelPath);
 								Resource res = new ResourceSetImpl()
@@ -226,6 +194,7 @@ public class DiagramPart {
 						});
 	}
 
+	// Copied from ProjectServices
 	public static void enableViewpoints(final Session session,
 			final String... viewpointsToActivate) {
 		if (session != null) {

@@ -2,7 +2,9 @@
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmi:id="_c3AF0MjYEeSyMNYR5xypkQ" elementId="org.eclipse.e4.application" bindingContexts="_c3AF2cjYEeSyMNYR5xypkQ">
   <children xsi:type="basic:TrimmedWindow" xmi:id="_c3AF0cjYEeSyMNYR5xypkQ" elementId="org.eclipse.e4.window.main" label="Empty E4 Application" width="500" height="400">
     <children xsi:type="basic:PartStack" xmi:id="_t8NuMFa_EeeZ3eikNisTRw" elementId="com.cohesionforce.e4.arduino.partstack.0">
-      <children xsi:type="basic:Part" xmi:id="_ubVTIFa_EeeZ3eikNisTRw" elementId="com.cohesionforce.e4.arduino.part.emptydiagrampart" contributionURI="bundleclass://com.cohesionforce.e4.arduino/com.cohesionforce.e4.arduino.DiagramPart" label="Empty Diagram Part"/>
+      <children xsi:type="basic:Part" xmi:id="_ubVTIFa_EeeZ3eikNisTRw" elementId="com.cohesionforce.e4.arduino.part.emptydiagrampart" contributionURI="bundleclass://com.cohesionforce.e4.arduino/com.cohesionforce.e4.arduino.DiagramPart" label="Empty Diagram Part 1"/>
+      <children xsi:type="basic:Part" xmi:id="_Asn3kFcgEeeeRLGx6RH7GA" elementId="com.cohesionforce.e4.arduino.part.emptydiagrampart2" contributionURI="bundleclass://com.cohesionforce.e4.arduino/com.cohesionforce.e4.arduino.DiagramPart" label="Empty Diagram Part 2"/>
+      <children xsi:type="basic:Part" xmi:id="_BIkMsFcgEeeeRLGx6RH7GA" elementId="com.cohesionforce.e4.arduino.part.emptydiagrampart3" contributionURI="bundleclass://com.cohesionforce.e4.arduino/com.cohesionforce.e4.arduino.DiagramPart" label="Empty Diagram Part 3"/>
     </children>
   </children>
   <rootContext xmi:id="_c3AF2cjYEeSyMNYR5xypkQ" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
